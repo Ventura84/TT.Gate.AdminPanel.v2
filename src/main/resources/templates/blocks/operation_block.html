@@ -1,0 +1,331 @@
+<div xmlns:th="http://www.thymeleaf.org">
+
+
+    <!-- PAGE TITLE -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" id="page-header" th:text="#{menu-item.operations}">Операции</h1>
+        </div>
+    </div>
+
+    <div class="menu_mobile hidden"></div>
+
+    <div class="row col-lg-12 col-md-12" style="margin-bottom: 20px">
+
+        <button type="button" class="col-lg-1 btn btn-success" onclick="operationsFormReset()"><span class="fa fa-file fa-fw"></span><span th:text="' ' + #{button.clear}"></span></button>
+        <form class="col-lg-11 form-inline">
+
+
+            <div th:if="${user.getUserOrgId() == 0} AND ${user.getUserOrgGroupId() == 0}" class="btn-group" role="group" style="margin-right: 20px">
+                <button type="button" class="btn btn-warning" id="org_btn" onclick="chartOrgGroupSelect(1)" th:text="#{button.org}"></button>
+                <button type="button" class="btn btn-default" id="org_group_btn" onclick="chartOrgGroupSelect(2)" th:text="#{button.gr}"></button>
+            </div>
+
+            <div class="form-group">
+            <span class="has-float-label">
+                <label th:if="${user.getUserOrgId() == 0}" class="formLabel" for="org_name" id="label_for_org_input" th:text="#{label.searchForOrg}"></label>
+                <input th:if="${user.getUserOrgId() == 0}" type="text" class="form-control" size="50" style="margin-right: 20px;" id="org_name">
+                <input type="hidden" th:value="${user.getUserOrgId()}" id="org_id">
+
+                <label th:if="${user.getUserOrgGroupId() == 0} AND ${user.getUserOrgId() == 0}" style="display: none" class="formLabel" for="org_group_name" id="label_for_group_input" th:text="#{label.searchForGroup}"></label>
+                <input th:if="${user.getUserOrgGroupId() == 0} AND ${user.getUserOrgId() == 0}" type="hidden" class="form-control" size="50" style="margin-right: 20px;" id="org_group_name">
+                <input type="hidden" th:value="${user.getUserOrgGroupId()}" id="org_group_id">
+            </span>
+            </div>
+
+            <div class="form-group">
+                <span class="has-float-label">
+                <label class="formLabel" for="tid" th:text="#{terminal}"></label>
+                <input type="text" id="tid" class="form-control" size="15" maxlength="8" minlength="8" style="margin-right: 20px">
+                </span>
+            </div>
+
+            <div class="form-group">
+                <span class="has-float-label">
+                <label class="formLabel" for="reportrange" th:text="#{label.dateRange}"></label>
+                <input type="text" id="reportrange" class="form-control link" size="25" style="margin-right: 20px">
+                </span>
+            </div>
+
+            <div class="form-group">
+                <span class="has-float-label">
+                <label class="formLabel" for="time" th:text="#{label.time}"></label>
+                <select name="time" id="time" class="form-control link time" style="margin-right: 20px">
+                    <option value="">--:--</option>
+                    <option value="01">01:00</option>
+                    <option value="02">02:00</option>
+                    <option value="03">03:00</option>
+                    <option value="04">04:00</option>
+                    <option value="05">05:00</option>
+                    <option value="06">06:00</option>
+                    <option value="07">07:00</option>
+                    <option value="08">08:00</option>
+                    <option value="09">09:00</option>
+                    <option value="10">10:00</option>
+                    <option value="11">11:00</option>
+                    <option value="12">12:00</option>
+                    <option value="13">13:00</option>
+                    <option value="14">14:00</option>
+                    <option value="15">15:00</option>
+                    <option value="16">16:00</option>
+                    <option value="17">17:00</option>
+                    <option value="18">18:00</option>
+                    <option value="19">19:00</option>
+                    <option value="20">20:00</option>
+                    <option value="21">21:00</option>
+                    <option value="22">22:00</option>
+                    <option value="23">23:00</option>
+                </select>
+                </span>
+            </div>
+            <input type="hidden" id="report_view" value="0">
+            <input type="hidden" id="report_creating_in_progress" value="0">
+            <button type="button" class="btn btn-success" id="report_view_btn"><span class="fa fa-list-alt fa-fw"></span><span th:text="' ' + #{button.show}"></span></button>
+            <button type="button" class="btn btn-success" id="get_report_btn"><span class="fa fa-file-excel-o fa-fw"></span><span th:text="' ' + #{button.export}"></span></button>
+
+        </form>
+    </div>
+
+
+    <!-- DATE RANGE HANDLER    -->
+
+    <script type="text/javascript">
+        $(function() {
+
+            var start = moment().subtract(0, 'days');
+            var end = moment();
+
+            moment.updateLocale('en', {
+                longDateFormat : {
+                    L: "YYYY-MM-DD"
+                }
+            });
+
+
+            function cb(start, end) {
+                $('#reportrange').html(start.format('YYYY-MM-DD') + '  -  ' + end.format('YYYY-MM-DD'));
+            }
+
+
+            $('#reportrange').daterangepicker({
+                startDate: start,
+                endDate: end,
+                ranges: {
+                    'Сегодня': [moment(), moment()],
+                    'Вчера': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                    'Последние 7 дней': [moment().subtract(6, 'days'), moment()],
+                    'Последние 30 дней': [moment().subtract(29, 'days'), moment()],
+                    'Текущий месяц': [moment().startOf('month'), moment().endOf('month')],
+                    'Прошедший месяц': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                locale: {
+                    daysOfWeek : [
+                        "Вс",
+                        "Пн",
+                        "Вт",
+                        "Ср",
+                        "Чт",
+                        "Пт",
+                        "Сб"
+                    ],
+                    monthNames : [
+                        "Январь",
+                        "Февраль",
+                        "Март",
+                        "Апрель",
+                        "Май",
+                        "Июнь",
+                        "Июль",
+                        "Август",
+                        "Сентябрь",
+                        "Октябрь",
+                        "Ноябрь",
+                        "Декабрь"
+                    ]
+                },
+            }, cb);
+
+            cb(start, end);
+
+        });
+    </script>
+
+
+
+
+
+    <!-- CONTENTS -->
+    <div class="row" id="contents">
+
+        <!-- RIGHT PANEL OF CONTENTS -->
+        <div class="col-lg-12">
+            <div class="panel panel-default" id="alert-panel">
+                <div class="panel-heading">
+                    <i class="fa fa-list-alt fa-fw"></i>
+                </div>
+
+                <div class="panel-body" id="operation-panel-body" style="max-height: 650px; overflow-y: auto; padding: 0 15px">
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        $(document).ready(function() {
+            $("#org_name").blur(function() {
+                if($("#org_name").val().length === 0){
+                    $("#org_id").val("0");
+
+                }
+                //alert($("#org_name").val().length);
+            });
+
+            $("#org_group_name").blur(function() {
+                if($("#org_group_name").val().length === 0){
+                    $("#org_group_id").val("0");
+
+                }
+                //alert($("#org_name").val().length);
+            });
+        });
+
+
+        $(document).ready(function () {
+            var resultData;
+            $('#org_name').autocomplete({
+
+                source: function (query, result) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "/org-autocomplete?query=" + query.term + "&orgGroupId=" + $('#org_group_id').val(),
+                        dataType: "json",
+                        type: "GET",
+                        success: function (data) {
+                            resultData = data;
+                            result($.map(data, function (item) {
+                                return item.org_name;
+                            }));
+
+                            $("#loader").hide();
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    for (var i = 0; i < resultData.length; i++) {
+                        if (resultData[i].org_name === ui.item.label) {
+                            $("#org_id").val(resultData[i].id);
+                            getLastOperations();
+                            break;
+                        }
+                    }
+                }
+            });
+        });
+
+        $(document).ready(function () {
+            var resultData;
+            $('#org_group_name').autocomplete({
+
+                source: function (query, result) {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "/org-group-autocomplete?query=" + query.term,
+                        dataType: "json",
+                        type: "GET",
+                        success: function (data) {
+                            resultData = data;
+                            result($.map(data, function (item) {
+                                return item.org_group_name;
+                            }));
+
+                            $("#loader").hide();
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    for (var i = 0; i < resultData.length; i++) {
+                        if (resultData[i].org_group_name === ui.item.label) {
+                            $("#org_group_id").val(resultData[i].id);
+                            getLastOperations();
+                            break;
+                        }
+                    }
+                }
+            });
+        });
+
+        getLastOperations();
+        //getLastOperationsInterval();
+    </script>
+
+    <script>
+
+        $('#get_report_btn').on('click', function(){
+            $("#report_creating_in_progress").val("1");
+            $("#loader").show();
+            $.ajax({
+                // url: "/get-report?org_id=" + $('#org_id').val() + "&date=" + $('#reportrange').val(),
+                url: "/get-report",
+                data: {
+                  org_group_id: $('#org_group_id').val(),
+                  org_id: $('#org_id').val(),
+                  date: $('#reportrange').val()
+
+                },
+                dataType: 'binary',
+                xhrFields: {
+                    'responseType': 'blob'
+                },
+                success: function(data, status, xhr) {
+                    var blob = new Blob([data], {type: xhr.getResponseHeader('Content-Type')});
+                    var link = document.createElement('a');
+                    link.href = window.URL.createObjectURL(blob);
+                    link.download = $('#reportrange').val() + '_TT.GATE.REPORT.xlsx';
+                    link.click();
+                    $("#loader").hide();
+                    $("#report_creating_in_progress").val("0");
+                }
+            });
+        });
+
+
+
+        $('#report_view_btn').on('click', function(){
+
+            if($('#org_id').val() === "0"){
+                alert("Для запроса нужно выбрать Организацию из списка");
+            } else {
+                $("#report_view").val("1");
+                $("#loader").show();
+                $.ajax({
+                    type: "GET",
+                    url: "/view-report",
+                    data: {
+                        org_id: $('#org_id').val(),
+                        tid: $('#tid').val(),
+                        date: $('#reportrange').val(),
+                        time: $('#time').val()
+                    },
+                    success: function(data) {
+                        $("#operation-panel-body").html(data);
+                        $("#loader").hide();
+
+                    }
+                });
+            }
+
+        });
+
+
+
+    </script>
+
+
+</div>

@@ -1,0 +1,101 @@
+<div th:fragment="org_group_block" xmlns:th="http://www.thymeleaf.org">
+
+
+    <!-- PAGE TITLE -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" id="page-header" th:text="#{menu-item.groups}">Группы</h1>
+        </div>
+    </div>
+
+    <!-- WIDGETS -->
+    <div class="row" id="widgets">
+        <div class="col-lg-5 col-md-5" id="org_group_form">
+            <div style="margin-bottom:20px">
+                <h4 th:text="#{add.group}">Добавить группу</h4>
+                <form style="margin-top: 20px">
+                    <div class="form-group">
+                    <span class="has-float-label">
+                        <label class="formLabel" for="org_group_name" th:text="#{groupName}"></label>
+                        <input type="text" name="org_group_name" id="org_group_name" class="form-control"/><br>
+                    </span>
+                    </div>
+                    <div class="form-group">
+                    <span class="has-float-label">
+                        <label class="formLabel" for="org_group_description" th:text="#{description}"></label>
+                        <input type="text" name="org_group_description" id="org_group_description" class="form-control"/><br>
+                    </span>
+                    </div>
+                    <button type="button" class="btn btn-success" onclick="cleanOrgGroupForm()"><span class="fa fa-file fa-fw"></span><span th:text="' ' + #{button.clear}"></span></button>
+                    <button type="button" class="btn btn-success" onclick="orgGroupAddCheck()"><span class="fa fa-plus fa-fw"></span><span th:text="' ' + #{button.add}"></span></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="row col-lg-3 col-md-3" style="margin-bottom: 20px">
+        <form>
+
+
+            <span class="has-float-label">
+                <label class="formLabel" for="org_group_search" th:text="#{label.search}"></label>
+                <input type="text" class="form-control" id="org_group_search">
+            </span>
+
+
+        </form>
+    </div>
+
+    <!-- CONTENTS -->
+    <div class="row" id="contents">
+
+        <!-- RIGHT PANEL OF CONTENTS -->
+        <div class="col-lg-12 col-md-6">
+            <div class="panel panel-default" id="alert-panel">
+                <div class="panel-heading">
+                    <i class="fa fa-list-alt fa-fw"></i>
+                </div>
+
+                <div class="panel-body" id="org-group-panel-body" style="max-height: 400px; overflow-y: auto; padding: 0 15px">
+
+                    <div class="table-responsive" th:replace="results/org_groups_added :: org_groups_added"></div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script> // SEARCH SCRIPT
+    $(document).ready(function () {
+        var timer;
+        $('#org_group_search').keyup(function(){
+
+            var searchFor = $('#org_group_search').val().trim();
+            window.clearTimeout(timer);
+            if (searchFor.length > 2) {
+                //alert(searchFor);
+                //loading_show();
+                timer = setTimeout(function () {
+                    $("#loader").show();
+                    $.ajax({
+                        url: "/org-group-search",
+                        cache: false,
+                        type: "POST",
+                        data: {
+                            searchFor: searchFor
+                        },
+                        success: function(text){
+                            $("#org-group-panel-body").html(text);
+                            //loading_hide();
+                            $("#loader").hide();
+                        }
+                    });
+                }, 1000);
+            }
+        });
+    });
+    </script>
+
+</div>

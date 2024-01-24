@@ -1,0 +1,145 @@
+<div th:fragment="main_panel_block" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+
+    <!-- PAGE TITLE -->
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header" id="page-header" th:text="#{menu-item.monitor}">Панель мониторинга</h1>
+        </div>
+    </div>
+
+    <!-- WIDGETS -->
+
+    <div class="row" id="widgets" sec:authorize="hasAuthority('ADMIN')">
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-institution fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="total-orgs">0</div>
+                            <div th:text="#{totalOrganizations}">Всего организаций</div>
+                        </div>
+                    </div>
+                </div>
+                <a onclick="getOrgPanel()" class="dashboard_link" sec:authorize="hasAuthority('ADMIN')">
+                    <div class="panel-footer">
+                        <span class="pull-left" th:text="#{goto}">перейти</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-green">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-tablet fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="total-terminals">0</div>
+                            <div th:text="#{totalTerminals}">Всего терминалов</div>
+                        </div>
+                    </div>
+                </div>
+                <a onclick="getTerminalPanel()" class="dashboard_link" sec:authorize="hasAuthority('ADMIN')">
+                    <div class="panel-footer">
+                        <span class="pull-left" th:text="#{goto}">перейти</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-yellow">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-credit-card fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="total-operations">0</div>
+                            <div th:text="#{totalOperations}">Всего операций</div>
+                        </div>
+                    </div>
+                </div>
+                <a onclick="getOperationPanel()" class="dashboard_link" sec:authorize="hasAuthority('ADMIN')">
+                    <div class="panel-footer">
+                        <span class="pull-left" th:text="#{goto}">перейти</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="panel panel-red">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-3">
+                            <i class="fa fa-clock-o fa-5x"></i>
+                        </div>
+                        <div class="col-xs-9 text-right">
+                            <div class="huge" id="operations-per-minute">0</div>
+                            <div th:text="#{operationsPerMin}">Операций в минуту</div>
+                        </div>
+                    </div>
+                </div>
+                <a onclick="getOperationPanel()" class="dashboard_link" sec:authorize="hasAuthority('ADMIN')">
+                    <div class="panel-footer">
+                        <span class="pull-left" th:text="#{goto}">перейти</span>
+                        <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                        <div class="clearfix"></div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENTS -->
+    <div class="row" id="contents">
+
+        <!-- SIGNAL PANEL OF CONTENTS -->
+        <div class="col-lg-12">
+            <div class="panel panel-default" id="alert-panel">
+
+                <div class="panel-heading">
+                    <i class="fa fa-warning fa-fw"></i>
+                </div>
+
+                <div class="panel-body" id="error-panel-body">
+
+                    <div class="table-responsive" th:replace="results/error_panel :: error_panel"></div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+
+    <script>
+
+
+        $(document).ready(function () {
+            getCounters();
+            getErrors();
+            getOperationsPerMinute();
+
+        });
+    </script>
+
+
+
+</div>
+
+
